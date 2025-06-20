@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-claims
+    ports:
+      - "6560:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: claims_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  backend:
+    build: ./Backend
+    container_name: backend-claims       # ✅ Renamed to avoid conflict
+    ports:
+      - "3005:3005"
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: admin123
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: claims_db
+      PORT: 3005
+    restart: unless-stopped
+
+  employee-claims:
+    build: ./Employee-claims
+    container_name: employee-claims
+    ports:
+      - "8058:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: http://backend:3005
+    restart: unless-stopped
+
+  hr-claims:
+    build: ./HR-claims
+    container_name: hr-claims
+    ports:
+      - "8059:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: http://backend:3005
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
