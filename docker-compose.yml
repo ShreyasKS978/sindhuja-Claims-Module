@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: postgres-claims
     ports:
-      - "6560:5432"
+      - "5204:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
@@ -19,7 +19,7 @@ services:
     build: ./Backend
     container_name: backend-claims       # ✅ Renamed to avoid conflict
     ports:
-      - "3005:3005"
+      - "3204:3204"
     depends_on:
       - postgres
     environment:
@@ -28,29 +28,29 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: claims_db
-      PORT: 3005
+      PORT: 3204
     restart: unless-stopped
 
   employee-claims:
     build: ./Employee-claims
     container_name: employee-claims
     ports:
-      - "8058:80"
+      - "8008:80"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://backend:3005
+      REACT_APP_API_URL: http://backend:3204
     restart: unless-stopped
 
   hr-claims:
     build: ./HR-claims
     container_name: hr-claims
     ports:
-      - "8059:80"
+      - "8009:80"
     depends_on:
       - backend
     environment:
-      REACT_APP_API_URL: http://backend:3005
+      REACT_APP_API_URL: http://backend:3204
     restart: unless-stopped
 
 volumes:
